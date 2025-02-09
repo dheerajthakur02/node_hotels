@@ -5,7 +5,7 @@ const bodyParser=require("body-parser")
 const personRoutes=require("./routes/personRoutes.js")
 const menuRoutes=require("./routes/menuRoutes.js")
 require("dotenv").config()
-const PORT=process.env.PORT||3000
+const PORT=process.env.PORT||4000
 const app=express();
 app.use(bodyParser.json());
 app.get("/",(req,res)=>{
