@@ -4,7 +4,8 @@ const { json } = require("body-parser");
 const bodyParser=require("body-parser")
 const personRoutes=require("./routes/personRoutes.js")
 const menuRoutes=require("./routes/menuRoutes.js")
-
+require("dotenv").config()
+const PORT=process.env.PORT||3000
 const app=express();
 app.use(bodyParser.json());
 app.get("/",(req,res)=>{
@@ -16,7 +17,7 @@ app.get("/",(req,res)=>{
 app.use("/person",personRoutes)
 app.use("/menu",menuRoutes)
 
-let port=3000
-app.listen(port,()=>{
-    console.log(`server is listening on port ${port}`)
+
+app.listen(PORT,()=>{
+    console.log(`server is listening on port ${PORT}`)
 })
