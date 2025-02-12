@@ -1,5 +1,8 @@
 # ignore node_modules directory
 node_modules
 .env
-
+learn1.js
+learn2.js
 # other directories
+
+

@@ -1,6 +1,7 @@
 const express=require("express")
 const router=express.Router()
 const Person=require("../models/person.js");
+const {generateToken,jwtAuthMiddleware}=require("../jwt.js")
 
 router.get('/',async(req,res)=>{
     try{
@@ -12,6 +13,19 @@ router.get('/',async(req,res)=>{
     }
 })
 
+// profile route
+router.get("/profile",jwtAuthMiddleware,async(req,res)=>{
+    try{
+        const userData=req.user
+        console.log("user data:",userData)
+        const userId=userData.id
+        const user=await Person.findById(userId)
+        res.send(user)
+    }catch(err){
+        console.log(err)
+        res.status(500).json({error :'internal server error'});
+    }
+})
 router.get("/:workType",async(req,res)=>{
     try{
         let workType=req.params.workType
@@ -28,14 +42,21 @@ router.get("/:workType",async(req,res)=>{
     } 
 })
 
-router.post('/', async(req,res)=>{
+router.post('/signup', async(req,res)=>{
     try{
         const data=req.body;
         const newPerson= new Person(data);
     
         const response=await newPerson.save();
         console.log("Data fetched");
-        res.status(200).json(response);
+        const payload={
+              username:response.username,
+              id:response.id
+        }
+        const token=generateToken(payload)
+        console.log("SAVED DATA",response)
+        console.log("The token is is:",token)
+        res.status(200).json({response:response,token:token});
     }
     catch(error){
         console.log(error);
@@ -43,7 +64,33 @@ router.post('/', async(req,res)=>{
     }
 
 })
+//login route
+router.post("/login",async(req,res)=>{
+    try{
+       //Extract username and password from request body
+       const {username ,password}=req.body
 
+       //find user by username
+       const user=await Person.findOne({username:username})
+  
+       //if user does not exist or password does not macthed then return error
+       if(!user || !(await(user.comparePassword(password)))){
+           return send.status(404).json({error:"Invalid username or password"})
+       }
+  
+       //generate token
+       const payload={
+          username:user.username,
+          id:user.id
+       }
+       const token=generateToken(payload)
+       res.json({token:token})
+    }catch(err){
+        console.log(err)
+        res.status(500).json({error :'internal server error'})
+    }
+   
+})
 router.put("/:id",async(req,res)=>{
      try{
          const personId=req.params.id //Extract id from url parameter

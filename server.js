@@ -33,7 +33,7 @@ const personRoutes=require("./routes/personRoutes.js")
 const menuRoutes=require("./routes/menuRoutes.js")
 
 //use routers
-app.use("/person",localAuthMiddileware,personRoutes) 
+app.use("/person",personRoutes) 
 app.use("/menu",menuRoutes)
 
 // app.use("/person",logRequest,personRoutes) 
